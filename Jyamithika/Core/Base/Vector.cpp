@@ -22,9 +22,10 @@ jmk::Vector3f jmk::crossProduct3d(Vector3f a, Vector3f b)
 	return Vector3f(x_, y_, z_);
 }
 
-float jmk::corssProduct2d(Vector2f a, Vector2f b)
+float jmk::crossProduct2d(const Vector2f& a, const Vector2f& b)
 {
-	return 0.0f;
+	float dir = a[X] * b[Y] - a[Y] * b[X];
+	return dir;
 }
 
 float jmk::scalerTripleProduct(Vector3f a, Vector3f b, Vector3f c)

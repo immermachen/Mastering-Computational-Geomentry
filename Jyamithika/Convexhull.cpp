@@ -9,6 +9,11 @@
 
 using namespace jmk;
 
+/// <summary>
+/// Jarvis[221]提出了一种包扎（wrapping）技术，可以在O(h×n)时间内构造出凸包（其中h为所生成凸包的复杂度），他的这一算法常被称为Jarvis行进（Jarvis march）
+/// </summary>
+/// <param name="_points"></param>
+/// <param name="_convex"></param>
 void jmk::convexhull2DGiftwrapping(std::vector<Point2d>& _points, std::vector<Point2d>& _convex)
 {
 	if (_points.size() <= 3)
@@ -603,4 +608,70 @@ void jmk::convexhull3D(std::vector<Point3d>& _points, std::vector<Face*>& faces)
 
 void jmk::convexhull3DQuickhull(std::vector<Point3d>& _points, Polygon& _results)
 {
+}
+
+/// <summary>
+/// Yang Added: brute-force Algo from book: O(N^3)
+/// </summary>
+/// <param name="_points"></param>
+/// <param name="_convex"></param>
+void jmk::convexhull2DSlow(std::vector<Point2d>& _points, std::vector<Point2d>& _convex)
+{
+	std::list<std::pair<Point2d, Point2d>> AboveEdges;
+	std::list<std::pair<Point2d, Point2d>> BottomEdges;
+	for (size_t i = 0; i < _points.size() - 1; ++i) {
+		for (size_t j = i + 1; j < _points.size(); ++j) {
+			auto& p = _points[i];
+			auto& q = _points[j];
+			auto pq = q - p;
+			{
+				bool valid = true;
+				for (size_t k = 0; k < _points.size(); ++k) {
+					if (k == i || k == j) continue;
+					auto& r = _points[k];
+					//auto pr = r - p;
+					//https://blog.csdn.net/tuibianyanzi/article/details/51884501
+					if (crossProduct2d(pq, r-p) >= 0) {
+						valid = false; break;
+					}
+				}
+				if (valid) {
+					if (p[X] < q[X])
+						AboveEdges.push_back({ p, q });
+					else
+						BottomEdges.push_back({ p, q });
+				}
+			}
+			auto qp = p - q;
+			{
+				bool valid = true;
+				for (size_t k = 0; k < _points.size(); ++k) {
+					if (k == i || k == j) continue;
+					auto& r = _points[k];
+					//auto qr = r - q;
+					if (crossProduct2d(qp, r-q) >= 0) {
+						valid = false; break;
+					}
+				}
+				if (valid) {
+					if (q[X] < p[X])
+						AboveEdges.push_back({ q, p });
+					else
+						BottomEdges.push_back({ q, p });
+				}
+			}
+		}
+	}
+	AboveEdges.sort([](std::pair<Point2d, Point2d>& a, std::pair<Point2d, Point2d>& b) {
+		return a.first < b.first;
+	});
+	BottomEdges.sort([](std::pair<Point2d, Point2d>& a, std::pair<Point2d, Point2d>& b) {
+		return a.first > b.first;
+	});
+	for (auto& edge : AboveEdges) {
+		_convex.push_back(edge.first);
+	}
+	for (auto& edge : BottomEdges) {
+		_convex.push_back(edge.first);
+	}
 }

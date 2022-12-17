@@ -47,5 +47,7 @@ namespace jmk
 	// TODO : Have not implemented yet
 	void convexhull3DQuickhull(std::vector<Point3d>& _points, Polygon& _results);
 
-
+	// Compute the points in the convex hull using the first simple slow algorithm.
+	// Yang added
+	void convexhull2DSlow(std::vector<Point2d>& _points, std::vector<Point2d>& _convex);
 }
